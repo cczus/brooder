@@ -36,6 +36,7 @@ int heaterState = 0;
 int heaterTimer = 0;
 int heaterRunTime = 0;
 int fanState = 0;
+int heatLampState = 0;
 
 int heater = D1;
 int lights = D2;
@@ -173,6 +174,12 @@ void report(int temp1, int targetTemp, int heatLampCon, int heatLampRunTime,
         char char_heatLampCon[str_len];
         stringHeatLampCon.toCharArray(char_heatLampCon, str_len);
 
+        String stringHeatLampState;
+        stringHeatLampState = String(heatLampState);
+        str_len = stringHeatLampState.length() + 1;
+        char char_heatLampState[str_len];
+        stringHeatLampState.toCharArray(char_heatLampState, str_len);
+
         String stringheatLampRunTime;
         stringheatLampRunTime = String(heatLampRunTime);
         str_len = stringheatLampRunTime.length() + 1;
@@ -241,6 +248,7 @@ void report(int temp1, int targetTemp, int heatLampCon, int heatLampRunTime,
         root["temp1"] = char_temp1;
         root["targetTemp"] = char_targetTemp;
         root["heatLampCon"] = char_heatLampCon;
+        root["heatLampState"] = char_heatLampState;
         root["heatLampRunTime"] = char_heatLampRunTime;
         root["lightState"] = char_lightState;
         root["relHumidity"] = char_h;
@@ -294,7 +302,7 @@ void blink(int blinks)
 int readSensor()
     {
         h = dht.getHumidity();
-    	f = dht.getTempFarenheit();
+    	  f = dht.getTempFarenheit();
 
         hi = fConvert(dht.getHeatIndex());
         dp = fConvert(dht.getDewPoint());
@@ -399,14 +407,16 @@ void heaterControlFunc()
 void heatLampConFunc()
     {
         //Heating pad Control
-        if (heatLampCon == 0 or (temp1 > targetTemp))
+        if (temp1 > targetTemp)
             {
                 digitalWrite(heatLamp, HIGH);
+                heatLampState = 0;
             }
 
-        if (heatLampCon == 1 or ((temp1 < targetTemp) and heaterRunTime > 300000))
+        if ((temp1 < targetTemp) and heaterRunTime > 300000)
             {
                 digitalWrite(heatLamp, LOW);
+                heatLampState = 1;
             }
     }
 
